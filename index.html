@@ -2741,10 +2741,27 @@ document.getElementById("btnNewCari").onclick=()=>{
     const mevcut_stok = ana_tur==="Stok" ? (Number(document.getElementById("ncMevcut").value)||0) : null;
     if(!ad) return toast("Ad gir","err");
     const id="c_"+Date.now();
-    const obj={id,ad,tur,ana_tur,not_,kritik_stok,mevcut_stok};
-    try{ await sb.post("ys_caris",obj); state.caris.push(obj); }
-    catch(e){ state.caris.push(obj); }
-    refreshAll(); closeModal(); toast("Cari eklendi","ok");
+    // not_ kolonu Supabase'de farklı isimde olabilir - ikisini de gönder
+    const obj={id, ad, tur, ana_tur,
+      not: not_, not_: not_,
+      kritik_stok: kritik_stok||null,
+      mevcut_stok: mevcut_stok||null
+    };
+    const btn = document.getElementById("ncSave");
+    if(btn){ btn.disabled=true; btn.textContent="Kaydediliyor..."; }
+    try{
+      await sb.post("ys_caris", obj);
+      await loadAll(); // Supabase'den taze yükle
+      closeModal();
+      toast("✅ Cari kaydedildi","ok");
+    } catch(e){
+      console.error("Cari kayıt hatası:", e.message||e);
+      toast("❌ Supabase hatası: "+(e.message||"bilinmiyor"), "err");
+      if(btn){ btn.disabled=false; btn.textContent="Kaydet"; }
+      // Offline fallback
+      if(!state.caris.find(c=>c.id===id)){ state.caris.push(obj); }
+      refreshAll();
+    }
   };
 };
 
