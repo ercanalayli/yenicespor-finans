@@ -3397,5 +3397,48 @@ if(sessionStorage.getItem(LS_AUTH)==="1"){
   loadAll().then(()=>{ connectRealtime(); checkAutoTahakkuk(); });
 }
 </script>
+  <!-- ===== VOICE ENTRY (Mobile + Approval) ===== -->
+<button id="voiceFab" aria-label="Sesli giriş" style="
+position:fixed; right:16px; bottom:16px;
+width:58px; height:58px; border-radius:999px;
+font-size:22px; z-index:9999;
+">🎙️</button>
+
+<script>
+(function(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const btn = document.getElementById('voiceFab');
+
+  function startVoice(){
+    if(!SR){
+      alert("Sesli giriş desteklenmiyor. iPhone'da Chrome/Safari kısıtlı olabilir. Dikte (klavye mikrofonu) alternatifi var.");
+      return;
+    }
+    const rec = new SR();
+    rec.lang = 'tr-TR';
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+
+    rec.onresult = (e)=>{
+      const text = (e.results?.[0]?.[0]?.transcript || '').trim();
+      if(!text){ alert("Ses algılanmadı."); return; }
+
+      // ✅ ONAY ZORUNLU
+      const ok = confirm("Komut:\n\n" + text + "\n\nOnaylıyor musun?");
+      if(!ok) return;
+
+      // TODO: Burada senin mevcut 'işlem kaydetme' fonksiyonuna bağlayacağız.
+      // Şimdilik sadece gösteriyorum:
+      console.log("ONAYLANDI:", text);
+      alert("Onaylandı ✅ (şimdilik kayda bağlamadık)");
+    };
+
+    rec.onerror = ()=> alert("Dinleme hatası. Tekrar dene.");
+    rec.start();
+  }
+
+  btn.addEventListener('click', startVoice);
+})();
+</script>
 </body>
 </html>
