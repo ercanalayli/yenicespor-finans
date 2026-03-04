@@ -688,7 +688,7 @@ tr.stok-ok .cari-ad{color:var(--ok);}
       <img id="logoAuth" src="" style="width:70px;height:70px;border-radius:50%;object-fit:cover;border:3px solid rgba(0,200,180,.4);box-shadow:0 0 20px rgba(0,200,180,.2);">
     </div>
     <div class="auth-title">YENİCESPOR</div>
-    <div class="auth-sub">Finans Yönetim Sistemi v3.0.1</div>
+	<div class="auth-sub">Finans Yönetim Sistemi v3.1</div>
     <input type="password" id="authPass" placeholder="Şifre" autocomplete="current-password" style="width:100%;margin-bottom:10px;font-size:20px;text-align:center;letter-spacing:5px;"/>
     <div id="authErr" style="display:none;color:var(--bad);font-size:12px;margin-bottom:8px;">Yanlış şifre</div>
     <button class="btn accent" id="authOk" style="width:100%;padding:11px;font-size:15px;">Giriş</button>
@@ -708,7 +708,7 @@ tr.stok-ok .cari-ad{color:var(--ok);}
   <div class="header-inner">
     <div class="logo">
       <img id="logoHeader" src="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid rgba(0,200,180,.4);">
-      YENİCESPOR FİNANS <span class="v">v3.0</span>
+	  YENİCESPOR FİNANS <span class="v">v3.1</span>
     </div>
     <div class="sync-status">
       <div class="sync-dot" id="syncDot"></div>
@@ -936,8 +936,8 @@ tr.stok-ok .cari-ad{color:var(--ok);}
   <section id="tab-cari" style="display:none;gap:12px;">
     <!-- Sub-tab nav -->
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
-      <div style="display:flex;gap:6px;flex-wrap:wrap;">
-        <button class="btn cari-subtab active" data-sub="musteri" onclick="showCariSub('musteri')">🏪 Gelirler</button>
+	      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+	        <button class="btn cari-subtab active" data-sub="musteri" onclick="showCariSub('musteri')">🏪 Gelirler</button>
         <button class="btn cari-subtab" data-sub="tedarikci" onclick="showCariSub('tedarikci')">🏭 Tedarikçiler</button>
         <button class="btn cari-subtab" data-sub="stok" onclick="showCariSub('stok')">📦 Stok / Mallar</button>
         <button class="btn cari-subtab" data-sub="diger" onclick="showCariSub('diger')">📋 Diğer</button>
@@ -945,9 +945,9 @@ tr.stok-ok .cari-ad{color:var(--ok);}
       <button class="btn accent" id="btnNewCari">+ Yeni Cari</button>
     </div>
 
-    <!-- GELİRLER -->
+	    <!-- GELİRLER (eski: MÜŞTERİLER) -->
     <div id="cari-sub-musteri" class="card">
-      <div class="card-title">🏪 GELİRLER — Ödeme / Alacak Durumu</div>
+	      <div class="card-title">🏪 GELİRLER — Tahsilat / Alacak Durumu</div>
       <div class="tbl-wrap">
         <table>
           <thead><tr>
@@ -1144,7 +1144,7 @@ tr.stok-ok .cari-ad{color:var(--ok);}
       </div>
       <div class="tbl-wrap">
         <table>
-          <thead><tr><th>Tarih</th><th>Tür</th><th>Kategori</th><th>Cari</th><th>Açıklama</th><th class="right">Tutar</th><th>Kasa</th></tr></thead>
+	          <thead><tr><th>Tarih</th><th>Tür</th><th>Kategori</th><th>Cari</th><th>Açıklama</th><th class="right">Tutar</th><th>Kasa</th><th class="right">Sil</th></tr></thead>
           <tbody id="reportRows"></tbody>
         </table>
       </div>
@@ -1172,7 +1172,7 @@ tr.stok-ok .cari-ad{color:var(--ok);}
 
 <script>
 /* ======================================
-   YENICE SPOR FİNANS v3.0
+	 YENICE SPOR FİNANS v3.1
    Supabase + Tahakkuk Şablonları + Excel/PDF + Vadesi Geçmiş Uyarı
    ====================================== */
 
@@ -1803,7 +1803,7 @@ function renderCaris(){
     groups[k].push({c, s, ys, bal, days});
   }
 
-  // --- GELİRLER ---
+  // --- MÜŞTERİLER ---
   // Müşteriden: gelir=ödedi, gider=ödemesi gereken (tahakkuk)
   // Kırmızı: bakiye pozitif (bize hâlâ borçlu) veya vade >60g
   const mRows = groups.musteri.map(({c,s,ys,bal,days})=>{
@@ -2385,8 +2385,9 @@ function renderReport(rows){
       <td class="muted small">${t.aciklama||""}</td>
       <td class="right bold" style="color:${t.tur==='GELİR'?'var(--ok)':'var(--bad)'}">${t.tur==='GELİR'?'+':'-'}${fmt(t.tutar)} ₺</td>
       <td><span class="pill ${t.kasa==='BANKA'?'blue':t.kasa==='NAKİT'?'ok':'neu'}">${t.kasa||""}</span></td>
+        <td class="right"><button class="btn" style="padding:6px 10px" onclick="requestDeleteTx('${t.id}')">🗑️</button></td>
     </tr>`;
-  }).join("") || `<tr><td colspan="7" class="muted" style="padding:16px;text-align:center;">Sonuç yok</td></tr>`;
+	  }).join("") || `<tr><td colspan="8" class="muted" style="padding:16px;text-align:center;">Sonuç yok</td></tr>`;
 }
 
 // Hızlı rapor seçenekleri
@@ -2528,7 +2529,7 @@ function exportToPdf(rows, title){
     <thead><tr><th>Tarih</th><th>Tür</th><th>Kategori</th><th>Cari</th><th>Açıklama</th><th>Tutar</th><th>Kasa</th></tr></thead>
     <tbody>${tableRows}</tbody>
   </table>
-  <div class="footer">Oluşturulma: ${now} | YENİCESPOR FİNANS v3.0</div>
+	<div class="footer">Oluşturulma: ${now} | YENİCESPOR FİNANS v3.1</div>
   </body>
   </html>`;
 
@@ -3259,7 +3260,7 @@ async function saveImageTx(){
   // Service Worker kaydet
   if("serviceWorker" in navigator){
     const swCode = `
-const CACHE = "ys-finans-v3";
+	const CACHE = "ys-finans-v31";
 const ASSETS = [self.location.href.replace('/sw.js','/')];
 self.addEventListener("install", e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).catch(()=>{}));
@@ -3396,49 +3397,6 @@ if(sessionStorage.getItem(LS_AUTH)==="1"){
   document.getElementById("appMain").style.display="block";
   loadAll().then(()=>{ connectRealtime(); checkAutoTahakkuk(); });
 }
-</script>
-  <!-- ===== VOICE ENTRY (Mobile + Approval) ===== -->
-<button id="voiceFab" aria-label="Sesli giriş" style="
-position:fixed; right:16px; bottom:16px;
-width:58px; height:58px; border-radius:999px;
-font-size:22px; z-index:9999;
-">🎙️</button>
-
-<script>
-(function(){
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const btn = document.getElementById('voiceFab');
-
-  function startVoice(){
-    if(!SR){
-      alert("Sesli giriş desteklenmiyor. iPhone'da Chrome/Safari kısıtlı olabilir. Dikte (klavye mikrofonu) alternatifi var.");
-      return;
-    }
-    const rec = new SR();
-    rec.lang = 'tr-TR';
-    rec.interimResults = false;
-    rec.maxAlternatives = 1;
-
-    rec.onresult = (e)=>{
-      const text = (e.results?.[0]?.[0]?.transcript || '').trim();
-      if(!text){ alert("Ses algılanmadı."); return; }
-
-      // ✅ ONAY ZORUNLU
-      const ok = confirm("Komut:\n\n" + text + "\n\nOnaylıyor musun?");
-      if(!ok) return;
-
-      // TODO: Burada senin mevcut 'işlem kaydetme' fonksiyonuna bağlayacağız.
-      // Şimdilik sadece gösteriyorum:
-      console.log("ONAYLANDI:", text);
-      /* alert removed */
-    };
-
-    rec.onerror = ()=> alert("Dinleme hatası. Tekrar dene.");
-    rec.start();
-  }
-
-  btn.addEventListener('click', startVoice);
-})();
 </script>
 </body>
 </html>
