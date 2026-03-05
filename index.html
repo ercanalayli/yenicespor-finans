@@ -677,6 +677,13 @@ tr.stok-ok .cari-ad{color:var(--ok);}
   #voiceBtn,#toast,.header-actions,nav,#authOverlay{display:none!important;}
   .card{border:1px solid #ccc;page-break-inside:avoid;}
 }
+
+/* Income/Expense coloring */
+.tx-income{color:var(--ok);font-weight:800;}
+.tx-expense{color:var(--bad);font-weight:800;}
+.cari-green{color:var(--ok);font-weight:800;}
+.cari-red{color:var(--bad);font-weight:800;}
+
 </style>
 </head>
 <body>
@@ -688,7 +695,7 @@ tr.stok-ok .cari-ad{color:var(--ok);}
       <img id="logoAuth" src="" style="width:70px;height:70px;border-radius:50%;object-fit:cover;border:3px solid rgba(0,200,180,.4);box-shadow:0 0 20px rgba(0,200,180,.2);">
     </div>
     <div class="auth-title">YENİCESPOR</div>
-	<div class="auth-sub">Finans Yönetim Sistemi v3.1</div>
+    <div class="auth-sub">Finans Yönetim Sistemi v3.0</div>
     <input type="password" id="authPass" placeholder="Şifre" autocomplete="current-password" style="width:100%;margin-bottom:10px;font-size:20px;text-align:center;letter-spacing:5px;"/>
     <div id="authErr" style="display:none;color:var(--bad);font-size:12px;margin-bottom:8px;">Yanlış şifre</div>
     <button class="btn accent" id="authOk" style="width:100%;padding:11px;font-size:15px;">Giriş</button>
@@ -708,7 +715,7 @@ tr.stok-ok .cari-ad{color:var(--ok);}
   <div class="header-inner">
     <div class="logo">
       <img id="logoHeader" src="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid rgba(0,200,180,.4);">
-	  YENİCESPOR FİNANS <span class="v">v3.1</span>
+      YENİCESPOR FİNANS <span class="v">v3.2</span>
     </div>
     <div class="sync-status">
       <div class="sync-dot" id="syncDot"></div>
@@ -936,8 +943,8 @@ tr.stok-ok .cari-ad{color:var(--ok);}
   <section id="tab-cari" style="display:none;gap:12px;">
     <!-- Sub-tab nav -->
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
-	      <div style="display:flex;gap:6px;flex-wrap:wrap;">
-	        <button class="btn cari-subtab active" data-sub="musteri" onclick="showCariSub('musteri')">🏪 Gelirler</button>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="btn cari-subtab active" data-sub="musteri" onclick="showCariSub('musteri')">💚 Gelirler</button>
         <button class="btn cari-subtab" data-sub="tedarikci" onclick="showCariSub('tedarikci')">🏭 Tedarikçiler</button>
         <button class="btn cari-subtab" data-sub="stok" onclick="showCariSub('stok')">📦 Stok / Mallar</button>
         <button class="btn cari-subtab" data-sub="diger" onclick="showCariSub('diger')">📋 Diğer</button>
@@ -945,13 +952,13 @@ tr.stok-ok .cari-ad{color:var(--ok);}
       <button class="btn accent" id="btnNewCari">+ Yeni Cari</button>
     </div>
 
-	    <!-- GELİRLER (eski: MÜŞTERİLER) -->
+    <!-- MÜŞTERİLER -->
     <div id="cari-sub-musteri" class="card">
-	      <div class="card-title">🏪 GELİRLER — Tahsilat / Alacak Durumu</div>
+      <div class="card-title">💚 GELİRLER — Tahsilat / Tahakkuk Durumu</div>
       <div class="tbl-wrap">
         <table>
           <thead><tr>
-            <th>Müşteri</th><th>Kategori</th>
+            <th>Gelir Cari</th><th>Kategori</th>
             <th class="right" style="color:var(--ok)">Ödediği</th>
             <th class="right" style="color:var(--warn)">Ödemesi Gereken</th>
             <th class="right">Bakiye</th>
@@ -1144,7 +1151,7 @@ tr.stok-ok .cari-ad{color:var(--ok);}
       </div>
       <div class="tbl-wrap">
         <table>
-	          <thead><tr><th>Tarih</th><th>Tür</th><th>Kategori</th><th>Cari</th><th>Açıklama</th><th class="right">Tutar</th><th>Kasa</th><th class="right">Sil</th></tr></thead>
+          <thead><tr><th>Tarih</th><th>Tür</th><th>Kategori</th><th>Cari</th><th>Açıklama</th><th class="right">Tutar</th><th>Kasa</th></tr></thead>
           <tbody id="reportRows"></tbody>
         </table>
       </div>
@@ -1172,7 +1179,7 @@ tr.stok-ok .cari-ad{color:var(--ok);}
 
 <script>
 /* ======================================
-	 YENICE SPOR FİNANS v3.1
+   YENICE SPOR FİNANS v3.0
    Supabase + Tahakkuk Şablonları + Excel/PDF + Vadesi Geçmiş Uyarı
    ====================================== */
 
@@ -1607,7 +1614,7 @@ function renderKasaTx(){
       <td class="bold">${c?c.ad:"-"}</td>
       <td class="muted">${t.aciklama||""}</td>
       <td class="${t.kasa==='BANKA'?'kasa-banka':t.kasa==='NAKİT'?'kasa-nakit':''}">${t.kasa||""}</td>
-      <td class="right bold">${fmt(t.tutar)}</td>
+      <td class="right bold ${t.tur==='GELİR'?'tx-income':'tx-expense'}">${fmt(t.tutar)}</td>
     </tr>`;
   }).join("");
   const el = document.getElementById("kasaTxRows");
@@ -1622,7 +1629,7 @@ function renderRecent(){
       <td class="muted small">${t.tarih}</td>
       <td><span class="pill ${t.tur==='GELİR'?'ok':'bad'}">${t.tur}</span></td>
       <td class="bold">${c?c.ad:"-"}</td>
-      <td class="right bold">${fmt(t.tutar)}</td>
+      <td class="right bold ${t.tur==='GELİR'?'tx-income':'tx-expense'}">${fmt(t.tutar)}</td>
       <td><button class="btn danger" style="padding:2px 7px;font-size:11px;" onclick="handleDelete('${t.id}')">✕</button></td>
     </tr>`;
   }).join("");
@@ -1803,82 +1810,95 @@ function renderCaris(){
     groups[k].push({c, s, ys, bal, days});
   }
 
-  // --- MÜŞTERİLER ---
-  // Müşteriden: gelir=ödedi, gider=ödemesi gereken (tahakkuk)
-  // Kırmızı: bakiye pozitif (bize hâlâ borçlu) veya vade >60g
+  // --- GELİRLER (eski: MÜŞTERİLER) ---
+  // Gelir caride: GİDER = tahakkuk (ödemesi gereken), GELİR = tahsilat (ödediği)
+  // Açık (borç) = tahakkuk - tahsilat
+  // Kırmızı: açık > 0 (borcu var) veya vade > 60g
   const mRows = groups.musteri.map(({c,s,ys,bal,days})=>{
-    const odedi = ys.gelir;    // Bu yıl ödediği
-    const gerekli = ys.gider;  // Bu yıl tahakkuk eden
+    const odedi = ys.gelir;    // Bu yıl tahsil edilen
+    const tahakkuk = ys.gider; // Bu yıl tahakkuk eden
+    const open = (tahakkuk - odedi);
     const vadePill = vadeChip(days);
+
     let rowClass = "clickable";
     let durumPill = "";
-    if(bal > 0){ 
+    if(open > 0){
       rowClass = days!==null && days>60 ? "clickable cari-musteri-alacak" : days!==null && days>30 ? "clickable cari-vade-warn" : "clickable cari-ok";
-      durumPill = bal > 0 && days!==null && days>60 ? '<span class="pill bad">Gecikmiş</span>' : '<span class="pill warn">Açık</span>';
-    } else if(bal === 0){
+      durumPill = days!==null && days>60 ? '<span class="pill bad">Gecikmiş</span>' : '<span class="pill warn">Açık</span>';
+    } else if(open === 0){
       rowClass = "clickable cari-ok";
       durumPill = '<span class="pill ok">Kapandı</span>';
     } else {
       rowClass = "clickable cari-ok";
-      durumPill = '<span class="pill ok">Fazla Ödedi</span>';
+      durumPill = '<span class="pill ok">Fazla Tahsil</span>';
     }
-    const valColor = bal>0 ? "var(--bad)" : bal<0 ? "var(--ok)" : "var(--muted)";
+
+    const valColor = open>0 ? "var(--bad)" : open<0 ? "var(--ok)" : "var(--muted)";
+
     // Son tahsilat badge
     const lastTah = s.lastTahsilatTarih;
     const lastTahBadge = lastTah
       ? `<span class="last-tx-badge gelir">
-           <span class="badge-icon">💰</span>${lastTah.slice(5).replace("-",".")}
-           <span class="last-tx-tooltip">Son Tahsilat: ${lastTah} · ${fmt(s.lastTahsilatTutar)} ₺</span>
+           <span class="badge-icon">💰</span>`{lastTah.slice(5).replace("-",".")}
+           <span class="last-tx-tooltip">Son Tahsilat: `{lastTah} · `{fmt(s.lastTahsilatTutar)} ₺</span>
          </span>`
       : `<span class="last-tx-badge"><span class="badge-icon">💰</span>—<span class="last-tx-tooltip">Henüz tahsilat yok</span></span>`;
-    return `<tr class="${rowClass}" data-cari="${c.id}">
-      <td class="bold cari-ad">${c.ad}${lastTahBadge}</td>
-      <td class="muted small">${c.tur||""}</td>
-      <td class="right" style="color:var(--ok)">${fmt(odedi)} ₺</td>
-      <td class="right" style="color:var(--warn)">${fmt(gerekli)} ₺</td>
-      <td class="right bold" style="color:${valColor}">${fmt(Math.abs(bal))} ₺</td>
-      <td>${vadePill}</td>
-      <td>${durumPill}</td>
+
+    return `<tr class="`{rowClass}" data-cari="`{c.id}">
+      <td class="bold cari-ad">`{c.ad}`{lastTahBadge}</td>
+      <td class="muted small">`{c.tur||""}</td>
+      <td class="right tx-income">`{fmt(odedi)} ₺</td>
+      <td class="right" style="color:var(--warn)">`{fmt(tahakkuk)} ₺</td>
+      <td class="right bold" style="color:`{valColor}">`{fmt(Math.abs(open))} ₺</td>
+      <td>`{vadePill}</td>
+      <td>`{durumPill}</td>
     </tr>`;
-  }).join("") || '<tr><td colspan="7" class="muted" style="padding:16px">Müşteri yok</td></tr>';
+  }).join("") || '<tr><td colspan="7" class="muted" style="padding:16px">Gelir cari yok</td></tr>';
   const mEl = document.getElementById("cariRowsMusteri");
   if(mEl) mEl.innerHTML = mRows;
 
-  // --- TEDARİKÇİLER ---
-  // Tedarikçiye: gider=aldığı ödeme, gelir=alması gereken
+  // --- GİDER CARİLER (TEDARİKÇİLER) ---
+  // Gider caride: GELİR = tahakkuk (alacağı), GİDER = ödeme (ödediğimiz)
+  // Açık (alacak) = tahakkuk - ödeme
+  // Kırmızı: açık > 0 (alacağı var) veya vade > 60g
   const tRows = groups.tedarikci.map(({c,s,ys,bal,days})=>{
-    const aldigi = ys.gider;   // Bu yıl ödediğimiz
-    const gerekli = ys.gelir;  // Bu yıl tahakkuk/fatura
+    const odedik = ys.gider;   // Bu yıl ödediğimiz
+    const tahakkuk = ys.gelir; // Bu yıl tahakkuk eden (alacağı)
+    const open = (tahakkuk - odedik);
     const vadePill = vadeChip(days);
+
     let rowClass = "clickable";
     let durumPill = "";
-    if(bal < 0){ 
+    if(open > 0){
       rowClass = days!==null && days>60 ? "clickable cari-tedarikci-borc" : days!==null && days>30 ? "clickable cari-vade-warn" : "clickable cari-ok";
-      durumPill = days!==null && days>60 ? '<span class="pill bad">Gecikmiş</span>' : '<span class="pill warn">Borç Var</span>';
-    } else if(bal === 0){
+      durumPill = days!==null && days>60 ? '<span class="pill bad">Gecikmiş</span>' : '<span class="pill warn">Alacağı Var</span>';
+    } else if(open === 0){
       rowClass = "clickable cari-ok";
       durumPill = '<span class="pill ok">Kapandı</span>';
     } else {
       rowClass = "clickable cari-ok";
       durumPill = '<span class="pill ok">Fazla Ödendi</span>';
     }
-    const valColor = bal<0 ? "var(--bad)" : bal>0 ? "var(--ok)" : "var(--muted)";
+
+    const valColor = open>0 ? "var(--bad)" : open<0 ? "var(--ok)" : "var(--muted)";
+
     // Son ödeme badge
     const lastOd = s.lastOdemeTarih;
     const lastOdBadge = lastOd
       ? `<span class="last-tx-badge gider">
-           <span class="badge-icon">💸</span>${lastOd.slice(5).replace("-",".")}
-           <span class="last-tx-tooltip">Son Ödeme: ${lastOd} · ${fmt(s.lastOdemeTutar)} ₺</span>
+           <span class="badge-icon">💸</span>`{lastOd.slice(5).replace("-",".")}
+           <span class="last-tx-tooltip">Son Ödeme: `{lastOd} · `{fmt(s.lastOdemeTutar)} ₺</span>
          </span>`
       : `<span class="last-tx-badge"><span class="badge-icon">💸</span>—<span class="last-tx-tooltip">Henüz ödeme yok</span></span>`;
-    return `<tr class="${rowClass}" data-cari="${c.id}">
-      <td class="bold cari-ad">${c.ad}${lastOdBadge}</td>
-      <td class="muted small">${c.tur||""}</td>
-      <td class="right" style="color:var(--ok)">${fmt(aldigi)} ₺</td>
-      <td class="right" style="color:var(--warn)">${fmt(gerekli)} ₺</td>
-      <td class="right bold" style="color:${valColor}">${fmt(Math.abs(bal))} ₺</td>
-      <td>${vadePill}</td>
-      <td>${durumPill}</td>
+
+    return `<tr class="`{rowClass}" data-cari="`{c.id}">
+      <td class="bold cari-ad">`{c.ad}`{lastOdBadge}</td>
+      <td class="muted small">`{c.tur||""}</td>
+      <td class="right tx-expense">`{fmt(odedik)} ₺</td>
+      <td class="right" style="color:var(--warn)">`{fmt(tahakkuk)} ₺</td>
+      <td class="right bold" style="color:`{valColor}">`{fmt(Math.abs(open))} ₺</td>
+      <td>`{vadePill}</td>
+      <td>`{durumPill}</td>
     </tr>`;
   }).join("") || '<tr><td colspan="7" class="muted" style="padding:16px">Tedarikçi yok</td></tr>';
   const tEl = document.getElementById("cariRowsTedarikci");
@@ -2385,9 +2405,8 @@ function renderReport(rows){
       <td class="muted small">${t.aciklama||""}</td>
       <td class="right bold" style="color:${t.tur==='GELİR'?'var(--ok)':'var(--bad)'}">${t.tur==='GELİR'?'+':'-'}${fmt(t.tutar)} ₺</td>
       <td><span class="pill ${t.kasa==='BANKA'?'blue':t.kasa==='NAKİT'?'ok':'neu'}">${t.kasa||""}</span></td>
-        <td class="right"><button class="btn" style="padding:6px 10px" onclick="requestDeleteTx('${t.id}')">🗑️</button></td>
     </tr>`;
-	  }).join("") || `<tr><td colspan="8" class="muted" style="padding:16px;text-align:center;">Sonuç yok</td></tr>`;
+  }).join("") || `<tr><td colspan="7" class="muted" style="padding:16px;text-align:center;">Sonuç yok</td></tr>`;
 }
 
 // Hızlı rapor seçenekleri
@@ -2529,7 +2548,7 @@ function exportToPdf(rows, title){
     <thead><tr><th>Tarih</th><th>Tür</th><th>Kategori</th><th>Cari</th><th>Açıklama</th><th>Tutar</th><th>Kasa</th></tr></thead>
     <tbody>${tableRows}</tbody>
   </table>
-	<div class="footer">Oluşturulma: ${now} | YENİCESPOR FİNANS v3.1</div>
+  <div class="footer">Oluşturulma: ${now} | YENİCESPOR FİNANS v3.0</div>
   </body>
   </html>`;
 
@@ -3260,7 +3279,7 @@ async function saveImageTx(){
   // Service Worker kaydet
   if("serviceWorker" in navigator){
     const swCode = `
-	const CACHE = "ys-finans-v31";
+const CACHE = "ys-finans-v3";
 const ASSETS = [self.location.href.replace('/sw.js','/')];
 self.addEventListener("install", e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).catch(()=>{}));
@@ -3397,6 +3416,49 @@ if(sessionStorage.getItem(LS_AUTH)==="1"){
   document.getElementById("appMain").style.display="block";
   loadAll().then(()=>{ connectRealtime(); checkAutoTahakkuk(); });
 }
+</script>
+  <!-- ===== VOICE ENTRY (Mobile + Approval) ===== -->
+<button id="voiceFab" aria-label="Sesli giriş" style="
+position:fixed; right:16px; bottom:16px;
+width:58px; height:58px; border-radius:999px;
+font-size:22px; z-index:9999;
+">🎙️</button>
+
+<script>
+(function(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const btn = document.getElementById('voiceFab');
+
+  function startVoice(){
+    if(!SR){
+      alert("Sesli giriş desteklenmiyor. iPhone'da Chrome/Safari kısıtlı olabilir. Dikte (klavye mikrofonu) alternatifi var.");
+      return;
+    }
+    const rec = new SR();
+    rec.lang = 'tr-TR';
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+
+    rec.onresult = (e)=>{
+      const text = (e.results?.[0]?.[0]?.transcript || '').trim();
+      if(!text){ alert("Ses algılanmadı."); return; }
+
+      // ✅ ONAY ZORUNLU
+      const ok = confirm("Komut:\n\n" + text + "\n\nOnaylıyor musun?");
+      if(!ok) return;
+
+      // TODO: Burada senin mevcut 'işlem kaydetme' fonksiyonuna bağlayacağız.
+      // Şimdilik sadece gösteriyorum:
+      console.log("ONAYLANDI:", text);
+      alert("Onaylandı ✅ (şimdilik kayda bağlamadık)");
+    };
+
+    rec.onerror = ()=> alert("Dinleme hatası. Tekrar dene.");
+    rec.start();
+  }
+
+  btn.addEventListener('click', startVoice);
+})();
 </script>
 </body>
 </html>
